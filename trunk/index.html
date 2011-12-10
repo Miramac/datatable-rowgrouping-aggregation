@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		
+		<title>T5 Reporing</title>
+		<style type="text/css" title="currentStyle">
+			@import "css/jquery-ui/jquery-ui.css";
+			@import "css/page.css";
+			@import "css/table.css";
+		</style>
+		<script type="text/javascript" language="javascript" src="js/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" language="javascript" src="js/jquery-ui.js"></script>
+		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
+		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.rowGrouping.js"></script>
+		<script type="text/javascript" language="javascript" src="js/voc.dataTables.rowGroupingAgr.js"></script>
+		<style type="text/css">
+			.expanded-group{
+				background: url("images/minus.jpg") no-repeat scroll left center transparent;
+				padding-left: 15px !important
+			}
+
+			.collapsed-group{
+				background: url("images/plus.jpg") no-repeat scroll left center transparent;
+				padding-left: 15px !important
+			}
+
+		</style>
+		<script type="text/javascript" charset="utf-8">
+			Array.prototype.sum = function(){
+				for(var i=0,sum=0;i<this.length;sum+=this[i++]);
+				return sum;
+			}
+			Array.prototype.max = function(){
+				return Math.max.apply({},this)
+			}
+			Array.prototype.min = function(){
+				return Math.min.apply({},this)
+			}	
+			Array.prototype.avg = function(){
+				for(var i=0,sum=0;i<this.length;sum+=this[i++]);
+				return sum/this.length;
+			}	
+		</script>
+		<script type="text/javascript" charset="utf-8">
+		
+		
+			var t5DataTable = {
+				"data": [
+					['Welle 1','Projekt Organisation',2,2],
+					['Welle 1','Technik',2,1.3],
+					['Welle 1','Sonstiges',5,2.67],
+					['Welle 2','Technik',1,0.5],
+					['Welle 3','Projekt Organisation',2,2],
+				
+				],
+				"columns":[
+					{ "sTitle": "Projektaufgabe" },
+					{ "sTitle": "Tätigkeit" },
+					{ "sTitle": "Tage (ungewichtet)", "sClass": "center group-agr", "bSortable":false },
+					{ "sTitle": "Tage (gewichtet)", "sClass": "center group-agr", "bSortable":false}
+					/*, 
+						"fnRender": function(obj) {
+							var sReturn = obj.aData[ obj.iDataColumn ];
+							if ( sReturn == "A" ) {
+								sReturn = "<b>A</b>";
+							}
+							return sReturn;
+						}
+					}*/
+				]
+			};
+			
+			$(document).ready(function() {
+				$('#dynamic-table').dataTable( {
+					"bPaginate": false, 	//immer aus wegen grouping
+					"bLengthChange": false,	//immer aus wegen grouping
+					"bFilter": false,
+					"bSort": false, 		//noch nicht möglich, da kein update des html
+					"bInfo": false,
+					"bAutoWidth": true,
+					///"bJQueryUI": true,
+					
+					"aaData": t5DataTable.data,
+					"aoColumns": t5DataTable.columns
+				} ).rowGrouping({bExpandableGrouping: true,bExpandSingleGroup: false});
+
+			
+			//Row Aggr.
+			var groupAggregaions =[{
+				"aggregation":"sum"
+				},{
+				"aggregation":"avg"
+				}
+			];
+			rowAgr($('#dynamic-table'), groupAggregaions);
+			
+		});//onReady
+		
+		function debug(text) {
+			$('#debug').append(text + '<br>');
+		}
+		</script>
+	</head>
+	<body id="dt_example">
+		<div id="container">
+			
+			<div id="dynamic"><table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic-table"></table></div>
+			<div class="spacer"></div>
+			<div id="debug"></div>
+			
+			
+		</div><div id="error"></div>
+			
+			
+		</div>
+	</body>
+</html>
