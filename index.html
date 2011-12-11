@@ -13,6 +13,7 @@
 		<script type="text/javascript" language="javascript" src="js/jquery-ui.js"></script>
 		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.rowGrouping.js"></script>
+		
 		<script type="text/javascript" language="javascript" src="js/voc.dataTables.rowGroupingAgr.js"></script>
 		<style type="text/css">
 			.expanded-group{
@@ -59,15 +60,6 @@
 					{ "sTitle": "Tätigkeit" },
 					{ "sTitle": "Tage (ungewichtet)", "sClass": "center group-agr", "bSortable":false },
 					{ "sTitle": "Tage (gewichtet)", "sClass": "center group-agr", "bSortable":false}
-					/*, 
-						"fnRender": function(obj) {
-							var sReturn = obj.aData[ obj.iDataColumn ];
-							if ( sReturn == "A" ) {
-								sReturn = "<b>A</b>";
-							}
-							return sReturn;
-						}
-					}*/
 				]
 			};
 			
@@ -87,13 +79,12 @@
 
 			
 			//Row Aggr.
-			var groupAggregaions =[{
+			$('#dynamic-table').rowAgr({groupAggregaions:[{
 				"aggregation":"sum"
 				},{
 				"aggregation":"avg"
 				}
-			];
-			rowAgr($('#dynamic-table'), groupAggregaions);
+			]});
 			
 		});//onReady
 		
