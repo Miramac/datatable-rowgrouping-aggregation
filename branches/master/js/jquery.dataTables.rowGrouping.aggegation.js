@@ -8,7 +8,7 @@
 	*
 	*	ToDos:
 	*  	- new Data managment
-	*	- total aggregation: on single base or on group base (at the moment on group base)
+	*	- total aggregation: on single base or on group base (for now it is on group base)
 	*	- numberFormat
 	* 	- output
 	*	- reander after changes (like column sorting)
@@ -19,11 +19,14 @@
 		//Default Options
 		var defaults = {
 			"groupAggregaions":[{
-				"colIndex":1, //noch nicht genutz, evtl für aufbau der Spalten
-				"aggregation":"sum"
-			}]
+				"colIndex":1, 					//noch nicht genutz, evtl für aufbau der Spalten
+				"aggregation":"sum"			
+			}],
+			"valueSelector":"td.group-agr",		//Selector to get all Value-Cells
+			"cssClass":"center",				//Custom CSS Class for aggregation result cells
+			"totalLabel":"Gesamt"				//left label for total row
 		};
-		options =  $.extend(defaults, options); //Add Defaults to Option
+		options =  $.extend(defaults, options); 
 		
 		/** 
 		*	Aggregation function
@@ -33,33 +36,34 @@
 		*	@param {string} numberFormat [false]	Number formart
 		**/
 		function aggregate(aggregation,values,numberFormat){
-			if(typeof(numberFormat) == 'undefined')numberFormat=false;
+			if(typeof(numberFormat) === undefined) numberFormat=false;
 			if(typeof(values) == 'array') return values;
 			switch(aggregation.toLowerCase()) {
 				case 'sum':
 					for(var i=0,sum=0;i<values.length;sum+=values[i++]);
 					return (Math.round(sum*100)/100); //Fake number formart
-					break
+					break;
 				case 'avg':
 					for(var i=0,sum=0;i<values.length;sum+=values[i++]);
 					return (Math.round(sum/values.length*100)/100);
-					break
+					break;
 				case 'min':
 					return Math.min.apply({},values)
-					break
+					break;
 				case 'max':
 					return Math.max.apply({},values)
-					break
+					break;
 			}
-		};
+		}
 		
 		
 		/** jQuery Element Loop
 		**/
 		 return this.each(function (index, elem) {
-			var groups = [[],[]]; //All Group Values, need to be changed!
+			var groups = [[],[]]; //Array of all group collections
 			var table = $(elem);
 			var groupRows = $('td.group', table);
+			var colspan;
 			if(!groupRows.length>0) return; //No Grouping Table
 			groupRows.each(function(index){
 				var group = {
@@ -68,7 +72,7 @@
 					};
 				//Select Group Value Cells
 				var groupItemRows = $('tr.group-item-'+group.name, table);
-				var groupValueCells = $('td.group-agr',groupItemRows);
+				var groupValueCells = $(options.valueSelector,groupItemRows);
 				groupValueCells.each(function(index) {
 					var colIndex = 0;//Default auf erste Aggr. Spalte
 					for(var i=1; i<options.groupAggregaions.length; i++) { //teste alle Spalte >1
@@ -84,7 +88,7 @@
 				//Ausgabe -> needs to be changed!
 				var html = '';
 				for(var i=0; i<options.groupAggregaions.length; i++) { 
-					html += '<td class="center group">';
+					html += '<td class="group '+options.cssClass+'">';
 					//Aggregation
 					html += aggregate(options.groupAggregaions[i].aggregation,group.columns[i]);//Math.round(group.columns[i].sum()*100)/100;
 					groups[i].push (aggregate(options.groupAggregaions[i].aggregation,group.columns[i]));
@@ -92,17 +96,19 @@
 					//reset Group-Values
 					group.columns[i] = [];
 				}
-				//colspan entfernen
+				//save colspan value for total row
+				colspan = $(this).attr('colspan');
+				//remove colspan for group Row
 				$(this).removeAttr('colspan');
 				//Add to Group Row
-				$('#group-id-dynamic-table-'+group.name).append(html);
+				$('#group-id-dynamic-table-'+group.name).append(html); //Table-ID hartgecodet!!
 			});
 			if(groups.length>0) {
 				//Total Row
-				var totalRowHtml = '<tr><td colspan="3"></td>'; //Spacer
-				totalRowHtml += '<tr><td class="group">Gesamt</td>';
+				var totalRowHtml = '<tr><td colspan="'+colspan+'"></td>'; //Spacer
+				totalRowHtml += '<tr><td class="group">'+options.totalLabel+'</td>';
 				for (var i=0;i<options.groupAggregaions.length;i++) {
-					totalRowHtml += '<td class="center group">';
+					totalRowHtml += '<td class="group '+options.cssClass+'">';
 					totalRowHtml += aggregate(options.groupAggregaions[i].aggregation,groups[i])
 					totalRowHtml += '</td>';
 				}
