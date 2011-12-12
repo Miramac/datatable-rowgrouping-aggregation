@@ -15,7 +15,7 @@
 	* 	- CSS & Styling
 	*/
 	$(function ($) {
-		$.fn.rowAgr = function (options) {
+		$.fn.groupAggregation = function (options) {
 		//Default Options
 		var defaults = {
 			"groupAggregaions":[{
