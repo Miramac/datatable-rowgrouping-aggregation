@@ -5,16 +5,15 @@
 		
 		<title>T5 Reporing</title>
 		<style type="text/css" title="currentStyle">
-			@import "css/jquery-ui/jquery-ui.css";
 			@import "css/page.css";
 			@import "css/table.css";
 		</style>
+		
 		<script type="text/javascript" language="javascript" src="js/jquery-1.4.4.min.js"></script>
-		<script type="text/javascript" language="javascript" src="js/jquery-ui.js"></script>
 		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.rowGrouping.js"></script>
 		
-		<script type="text/javascript" language="javascript" src="js/voc.dataTables.rowGroupingAgr.js"></script>
+		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.rowGrouping.aggegation.js"></script>
 		<style type="text/css">
 			.expanded-group{
 				background: url("images/minus.jpg") no-repeat scroll left center transparent;
@@ -25,27 +24,13 @@
 				background: url("images/plus.jpg") no-repeat scroll left center transparent;
 				padding-left: 15px !important
 			}
-
 		</style>
 		<script type="text/javascript" charset="utf-8">
-			Array.prototype.sum = function(){
-				for(var i=0,sum=0;i<this.length;sum+=this[i++]);
-				return sum;
-			}
-			Array.prototype.max = function(){
-				return Math.max.apply({},this)
-			}
-			Array.prototype.min = function(){
-				return Math.min.apply({},this)
-			}	
-			Array.prototype.avg = function(){
-				for(var i=0,sum=0;i<this.length;sum+=this[i++]);
-				return sum/this.length;
-			}	
+	
 		</script>
 		<script type="text/javascript" charset="utf-8">
 		
-		
+			//Test Data
 			var t5DataTable = {
 				"data": [
 					['Welle 1','Projekt Organisation',2,2],
@@ -58,8 +43,8 @@
 				"columns":[
 					{ "sTitle": "Projektaufgabe" },
 					{ "sTitle": "Tätigkeit" },
-					{ "sTitle": "Tage (ungewichtet)", "sClass": "center group-agr", "bSortable":false },
-					{ "sTitle": "Tage (gewichtet)", "sClass": "center group-agr", "bSortable":false}
+					{ "sTitle": "Tage (ungewichtet)", "sClass": "center group-agr", "bSortable":false }, //CSS-Class 'group-agr' used for Aggregation
+					{ "sTitle": "Tage (gewichtet)", "sClass": "center group-agr", "bSortable":false}	 //CSS-Class 'group-agr' used for Aggregation
 				]
 			};
 			
@@ -75,18 +60,19 @@
 					
 					"aaData": t5DataTable.data,
 					"aoColumns": t5DataTable.columns
-				} ).rowGrouping({bExpandableGrouping: true,bExpandSingleGroup: false});
+				} ).rowGrouping({
+					"bExpandableGrouping": true,
+					"bExpandSingleGroup": false
+				}).groupAggregation({ //Row Aggregation
+					"groupAggregaions":[{
+						"aggregation":"sum"
+						},{
+						"aggregation":"avg"
+						}
+					]
+				});
 
-			
-			//Row Aggr.
-			$('#dynamic-table').rowAgr({groupAggregaions:[{
-				"aggregation":"sum"
-				},{
-				"aggregation":"avg"
-				}
-			]});
-			
-		});//onReady
+		});//End: documentReady
 		
 		function debug(text) {
 			$('#debug').append(text + '<br>');
@@ -96,12 +82,12 @@
 	<body id="dt_example">
 		<div id="container">
 			
-			<div id="dynamic"><table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic-table"></table></div>
+			<div id="dynamic">
+				<table cellpadding="0" cellspacing="0" border="0" class="display" id="dynamic-table"></table>
+			</div>
 			<div class="spacer"></div>
 			<div id="debug"></div>
-			
-			
-		</div><div id="error"></div>
+			</div><div id="error"></div>
 			
 			
 		</div>
